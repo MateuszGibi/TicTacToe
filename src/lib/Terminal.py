@@ -1,4 +1,5 @@
 import os 
+import socket
 
 class Terminal:
 
@@ -25,9 +26,9 @@ class Terminal:
         return int(input("Insert game port: "))
 
     def get_game_ip(self):
-        return input("Insert game host's ip: ")
+        return input(F"Insert game host's ip ({socket.gethostbyname(socket.gethostname())}): ")
 
-    def clear_terminal():
+    def clear_terminal(self):
         if os.name == "nt":
             os.system("cls")
         else:

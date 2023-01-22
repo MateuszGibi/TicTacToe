@@ -5,6 +5,7 @@ game = TicTackToe()
 terminal = Terminal()
 
 while True:
+    terminal.clear_terminal()
     terminal.main_menu()
     option = int(input("Select one option: "))
     if option == 1:

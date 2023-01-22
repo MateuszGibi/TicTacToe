@@ -14,10 +14,12 @@ class TicTackToe:
 
     turn_counter = 0
 
+    term = Terminal()
+
     def host_game(self, host, port):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_ip = socket.gethostbyname(socket.gethostname())
         if host == "":
-            server_ip = socket.gethostbyname(socket.gethostname())
             server_socket.bind((server_ip, port))
         else:
             server_socket.bind((host, port))
@@ -27,18 +29,25 @@ class TicTackToe:
         print("--------------------")
         print(f"| Game hosted on {server_ip} with port: {port} |")
         print("--------------------")
+        print("[INFO] Waiting for players...")
 
         client_socket, address = server_socket.accept()
-        print(f"[SERVER INFO] {address}")
+        print(f"[INFO] Player connected from: {address}")
         self.handle_conn(client_socket)
-        #threading.Thread(target=self.handle_conn, args=(client_socket,)).start()
         client_socket.close()
 
     def conn_to_game(self, host, port):
         print("[INFO] Connecting...")
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((host, port))
+        # client_socket.connect((host, port))
+        server_ip = socket.gethostbyname(socket.gethostname())
+        if host == "":
+            client_socket.connect((server_ip, port))
 
+        else:
+            client_socket.connect((host, port))
+
+        print("[INFO] Connected!")
         self.player1 = "O"
         self.player2 = "X"
         self.handle_conn(client_socket)
@@ -46,7 +55,7 @@ class TicTackToe:
         #client_socket.close()
 
     def handle_conn(self, socket: socket.socket):
-        print("[INFO] Handleing connection...")
+        self.turn = "X"
         while not self.game_over:
             if self.turn == self.player1:
                 move = input("[INFO] Enter your move (row, column): ")
@@ -57,8 +66,8 @@ class TicTackToe:
                 else:
                     print("[ERROR] Invalid move!")
             else:
+                print("[INFO] Waiting for move...")
                 game_data = socket.recv(1024)
-                print(f"[INFO][GAME DATA] {str(game_data.decode())}")
                 
                 if not game_data:
                     break
@@ -66,8 +75,8 @@ class TicTackToe:
                     self.apply_move(game_data.decode().split(","), self.player2)
                     self.turn = self.player1
             
-        print("[INFO] Cloasing...")
-        socket.close()
+        print("[INFO] Cloasing connection...")
+        input("[ALERT] Enter any key to contenue...")
 
     def apply_move(self, move_cords: list, player: str):
         if self.game_over: return
@@ -81,20 +90,17 @@ class TicTackToe:
                 print("[ALERT] |   YOU WON!!!   |")
                 print("[ALERT] ------------------")
                 
-                exit()
             elif self.winner == self.player2:
                 print("[ALERT] -------------------")
                 print("[ALERT] |   YOU LOSE!!!   |")
                 print("[ALERT] -------------------")
 
-                exit()
         else:
             if self.turn_counter == 9:
                 print("[ALERT] -------------------")
                 print("[ALERT] |      TIE!!!     |")
                 print("[ALERT] -------------------")
 
-                exit()
 
     def is_move_valid(self, move_cords: list):
         return self.grid[int(move_cords[0])][int(move_cords[1])] == " "
@@ -105,7 +111,6 @@ class TicTackToe:
                 print(f"{self.grid[row][0]}:{self.grid[row][1]}:{self.grid[row][2]}")
                 self.winner = self.grid[row][0]
                 self.game_over = True
-                print(f"Kurwa to nie działa game over: {row}:0")
                 return True
         
         for column in range(3):
@@ -128,8 +133,7 @@ class TicTackToe:
             return True
 
     def print_grid(self):
-        Terminal.clear_terminal = staticmethod(Terminal.clear_terminal)
-        Terminal.clear_terminal()
+        self.term.clear_terminal()
         for row in range(3):
             print("|".join(self.grid[row]))
             if row != 2:
