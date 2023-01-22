@@ -9,6 +9,12 @@ while True:
     terminal.main_menu()
     try:
         option = int(input("Select one option: "))
+
+    except KeyboardInterrupt:
+        print("")
+        print("[INFO] Exiting... Bye bye :)")
+        break
+
     except:
         print("[ERROR] Chose correct option!")
         input("[ALERT] Enter any key to continue...")
@@ -19,6 +25,7 @@ while True:
 
         try:
             game_port = terminal.get_game_port()
+
         except:
             print(f"[ERROR] Given PORT is not valid!")
             input("[ALERT] Enter any key to continue...")
@@ -30,6 +37,7 @@ while True:
 
         try:
             game_port = terminal.get_game_port()
+
         except:
             print(f"[ERROR] Given PORT is not valid!")
             input("[ALERT] Enter any key to continue...")

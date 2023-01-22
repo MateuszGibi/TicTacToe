@@ -87,7 +87,13 @@ class TicTackToe:
         while not self.game_over:
             if self.turn == self.player1:
                 self.print_grid()
-                move = input("[INFO] Enter your move (row, column): ")
+                try:
+                    move = input("[INFO] Enter your move (row, column): ")
+                except:
+                    print("")
+                    print("[INFO] Exiting... Bye bye :)")
+                    break
+                
                 if self.is_move_valid(move.split(",")):
                     self.apply_move(move.split(","), self.player1)
                     self.turn = self.player2
