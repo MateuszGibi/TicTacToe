@@ -23,13 +23,12 @@ class Terminal:
         print("0. Exit")
     
     def get_game_port(self):
-        try:
             return int(input("Insert game port: "))
-        except err:
-            print("[ERROR] Enter valid port")
+            
+
 
     def get_game_ip(self):
-        return input(F"Insert game host's ip ({socket.gethostbyname(socket.gethostname())}): ")
+        return input(f"Insert game host's ip ({socket.gethostbyname(socket.gethostname())}): ")
 
     def clear_terminal(self):
         if os.name == "nt":

@@ -16,12 +16,30 @@ class TicTackToe:
     term = Terminal()
 
     def host_game(self, host, port):
+        self.reset_game_data()
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_ip = socket.gethostbyname(socket.gethostname())
         if host == "":
-            server_socket.bind((server_ip, port))
+            try:
+                server_socket.bind((server_ip, port))
+
+            except socket.gaierror:
+                print("[ERROR] Given PORT is not valid!")
+                input("[ALERT] Enter any key to continue...")
+                return None
+
+            except:
+                print("[ERROR] Given IP is not valid!")
+                input("[ALERT] Enter any key to continue...")
+                return None
         else:
-            server_socket.bind((host, port))
+            try:
+                server_socket.bind((host, port))
+            except:
+                print("[ERROR] Given IP is not valid!")
+                input("[ALERT] Enter any key to continue...")
+                return None
+
 
         server_socket.listen(2)
 
@@ -36,25 +54,36 @@ class TicTackToe:
         client_socket.close()
 
     def conn_to_game(self, host, port):
+        self.reset_game_data()
         print("[INFO] Connecting...")
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # client_socket.connect((host, port))
         server_ip = socket.gethostbyname(socket.gethostname())
+
         if host == "":
-            client_socket.connect((server_ip, port))
+            try:
+                client_socket.connect((server_ip, port))
+
+            except:
+                print("[ERROR] Given IP is not valid!")
+                input("[ALERT] Enter any key to continue...")
+                return None
 
         else:
-            client_socket.connect((host, port))
+            try:
+                client_socket.connect((host, port))
+                
+            except:
+                print("[ERROR] Given IP is not valid!")
+                input("[ALERT] Enter any key to continue...")
+                return None
 
         print("[INFO] Connected!")
         self.player1 = "O"
         self.player2 = "X"
         self.handle_conn(client_socket)
-        #threading.Thread(target=self.handle_conn, args=(client_socket,)).start()
         client_socket.close()
 
     def handle_conn(self, socket: socket.socket):
-        self.turn = "X"
         while not self.game_over:
             if self.turn == self.player1:
                 self.print_grid()
@@ -65,7 +94,9 @@ class TicTackToe:
                     socket.send(move.encode())
                 else:
                     print("[ERROR] Invalid move!")
+                    input("[ALERT] Enter any key to continue...")
             else:
+                self.print_grid()
                 print("[INFO] Waiting for move...")
                 game_data = socket.recv(1024)
                 
@@ -76,7 +107,7 @@ class TicTackToe:
                     self.turn = self.player1
             
         print("[INFO] Cloasing connection...")
-        input("[ALERT] Enter any key to contenue...")
+        input("[ALERT] Enter any key to continue...")
 
     def apply_move(self, move_cords: list, player: str):
         if self.game_over: return
@@ -139,3 +170,12 @@ class TicTackToe:
                 print("# ----------- #")
 
         print("#=============#")
+
+    def reset_game_data(self):
+        self.grid = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
+        self.turn = "X"
+        self.player1 = "X"
+        self.player2 = "O"
+        self.winner = 0
+        self.game_over = False
+        self.turn_counter = 0
