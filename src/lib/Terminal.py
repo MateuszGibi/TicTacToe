@@ -23,7 +23,10 @@ class Terminal:
         print("0. Exit")
     
     def get_game_port(self):
-        return int(input("Insert game port: "))
+        try:
+            return int(input("Insert game port: "))
+        except err:
+            print("[ERROR] Enter valid port")
 
     def get_game_ip(self):
         return input(F"Insert game host's ip ({socket.gethostbyname(socket.gethostname())}): ")

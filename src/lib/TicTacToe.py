@@ -1,5 +1,4 @@
 import socket
-import threading
 
 from .Terminal import Terminal
 
@@ -52,12 +51,13 @@ class TicTackToe:
         self.player2 = "X"
         self.handle_conn(client_socket)
         #threading.Thread(target=self.handle_conn, args=(client_socket,)).start()
-        #client_socket.close()
+        client_socket.close()
 
     def handle_conn(self, socket: socket.socket):
         self.turn = "X"
         while not self.game_over:
             if self.turn == self.player1:
+                self.print_grid()
                 move = input("[INFO] Enter your move (row, column): ")
                 if self.is_move_valid(move.split(",")):
                     self.apply_move(move.split(","), self.player1)
@@ -97,6 +97,7 @@ class TicTackToe:
 
         else:
             if self.turn_counter == 9:
+                self.game_over = True
                 print("[ALERT] -------------------")
                 print("[ALERT] |      TIE!!!     |")
                 print("[ALERT] -------------------")
@@ -108,20 +109,17 @@ class TicTackToe:
     def is_game_over(self):
         for row in range(3):
             if self.grid[row][0] == self.grid[row][1] == self.grid[row][2] != " ":
-                print(f"{self.grid[row][0]}:{self.grid[row][1]}:{self.grid[row][2]}")
                 self.winner = self.grid[row][0]
                 self.game_over = True
                 return True
         
         for column in range(3):
             if self.grid[0][column] == self.grid[1][column] == self.grid[2][column] != " ":
-                print(f"{self.grid[0][column]}:{self.grid[1][column]}:{self.grid[2][column]}")
                 self.winner = self.grid[0][column]
                 self.game_over = True
                 return True
 
         if self.grid[0][0] == self.grid[1][1] == self.grid[2][2] != " ":
-            print(f"{self.grid[0][0]}:{self.grid[1][1]}:{self.grid[2][2]}")
             self.winner = self.grid[0][0]
             self.game_over = True
             return True
@@ -134,7 +132,10 @@ class TicTackToe:
 
     def print_grid(self):
         self.term.clear_terminal()
+        print("#=============#")
         for row in range(3):
-            print("|".join(self.grid[row]))
+            print("#  " + " | ".join(self.grid[row]) + "  #")
             if row != 2:
-                print("----------")
+                print("# ----------- #")
+
+        print("#=============#")
