@@ -1,6 +1,8 @@
 import socket
 import threading
 
+from .Terminal import Terminal
+
 class TicTackToe:
 
     grid = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
@@ -14,8 +16,17 @@ class TicTackToe:
 
     def host_game(self, host, port):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((host, port))
+        if host == "":
+            server_ip = socket.gethostbyname(socket.gethostname())
+            server_socket.bind((server_ip, port))
+        else:
+            server_socket.bind((host, port))
+
         server_socket.listen(2)
+
+        print("--------------------")
+        print(f"| Game hosted on {server_ip} with port: {port} |")
+        print("--------------------")
 
         client_socket, address = server_socket.accept()
         print(f"[SERVER INFO] {address}")
@@ -117,6 +128,8 @@ class TicTackToe:
             return True
 
     def print_grid(self):
+        Terminal.clear_terminal = staticmethod(Terminal.clear_terminal)
+        Terminal.clear_terminal()
         for row in range(3):
             print("|".join(self.grid[row]))
             if row != 2:
