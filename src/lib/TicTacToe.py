@@ -141,7 +141,11 @@ class TicTackToe:
 
 
     def is_move_valid(self, move_cords: list):
-        return self.grid[int(move_cords[0])][int(move_cords[1])] == " "
+        try:
+            return self.grid[int(move_cords[0])][int(move_cords[1])] == " "
+            
+        except:
+            return False
 
     def is_game_over(self):
         for row in range(3):
